@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/src/styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Twicasting Api App</title>
+    <script type="module" src="/src/main.ts" defer></script>
+  </head>
+
+  <body>
+    <!-- アクセストークン設定ボタン -->
+    <div class="settings-button-container">
+      <button class="settings-button" id="settings-button" onclick="openSettings()">アクセストークン設定</button>
+    </div>
+    <div id="settings-dialog" class="dialog" style="display: none;">
+      <label for="accessTokenInput">アクセストークン:</label>
+      <input type="text" id="accessTokenInput">
+      <button id="saveAccessTokenBtn">保存</button>
+    </div>
+
+    <div class="container">
+      <h1>ツイキャスAPIツール</h1>
+
+      <p>サポートしているユーザー情報を取得したいユーザーIDを入力</p>
+      <form class="row" id="display-form">
+        <input id="display-input" placeholder="Enter a name..." />
+        <button type="submit">取得</button>
+      </form>
+
+      <div style="text-align: center;">
+        <p id="display-msg"></p>
+      </div>
+    </div>
+  </body>
+</html>
