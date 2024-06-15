@@ -9,7 +9,7 @@
   </head>
 
   <body>
-    <!-- アクセストークン設定ボタン -->
+    <!-- アクセストークン設定 -->
     <div class="settings-button-container">
       <button class="settings-button" id="settings-button" onclick="openSettings()">アクセストークン設定</button>
     </div>
@@ -17,6 +17,13 @@
       <label for="accessTokenInput">アクセストークン:</label>
       <input type="text" id="accessTokenInput">
       <button id="saveAccessTokenBtn">保存</button>
+      <div id="settings-explain">
+        <p>ツイキャスのAPI仕様で、前提としてアクセストークン取得が必要です。</p>
+        <p>下記URLボタンよりツイキャスへログインまたはブラウザで開き、アプリ許可画面からアプリ利用の許可を実施してください。</p>
+        <p>画面に表示されたアクセストークンを取得してください。</p>
+        <a href="https://twitcasting.tv/oauth_confirm.php?client_id=ctwicas_api_tool.db189e35e1a53b0f66373b45cab2ac00280fc04f73067ab4d706f1fe198a9f2c&response_type=code
+        ">アクセストークンを取得リンク先</a>
+      </div>
     </div>
 
     <div class="container">
