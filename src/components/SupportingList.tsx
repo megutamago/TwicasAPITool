@@ -16,8 +16,7 @@ export async function diplayTable(displayMsgEl: HTMLElement | null, props: Suppo
             <th>ユーザー名</th>
             <th id="sortButton3">point <span id="sortIcon3" class="sort-icon">&nbsp;&nbsp;&nbsp;</span></th>
             <th id="sortButton4">total_point <span id="sortIcon4" class="sort-icon">&nbsp;&nbsp;&nbsp;</span></th>
-            <th>サポーター数</th>
-            <th>サポート数</th>
+            <th>サポートした日時</th>
           </tr>
         </thead>
         <tbody>
@@ -28,8 +27,7 @@ export async function diplayTable(displayMsgEl: HTMLElement | null, props: Suppo
               <td>${item.name}</td>
               <td>${item.point}</td>
               <td>${item.total_point}</td>
-              <td>${item.supporter_count}</td>
-              <td>${item.supporting_count}</td>
+              <td>${new Date(item.supported * 1000).toLocaleString()}</td>
             </tr>
           `).join('')}
         </tbody>
