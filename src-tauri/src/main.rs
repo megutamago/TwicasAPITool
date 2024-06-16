@@ -31,6 +31,7 @@ fn exe_api(
 
 fn convert_supporting_data(
     supporting_data: JsonValue,
+    offset: i32,
 ) -> Result<Vec<ExtendSupportingData>, String> {
     let result: Result<Vec<SupportingData>, _> = serde_json::from_value(supporting_data.clone());
     let _supporting_data = match result {
@@ -40,7 +41,9 @@ fn convert_supporting_data(
     let extend_supporting_data: Vec<ExtendSupportingData> = _supporting_data
         .into_iter()
         .enumerate()
-        .map(|(index, supporting_data)| ExtendSupportingData::new(index as i32, supporting_data))
+        .map(|(index, supporting_data)| {
+            ExtendSupportingData::new(index as i32 + offset + 1, supporting_data)
+        })
         .collect();
     Ok(extend_supporting_data)
 }
@@ -54,8 +57,8 @@ fn exe_api_loop(
     let loop_count = num / 20 + 1;
     let mut tmp_data: Vec<ExtendSupportingData> = Vec::new();
 
-    for _ in 0..loop_count {
-        let offset: i32 = 0;
+    for i in 0..loop_count {
+        let offset: i32 = i * 20;
         let limit: i32 = 20;
         #[allow(unused_variables)]
         let (total, supporting_data) = match exe_api(&user_id, _token.clone(), offset, limit) {
@@ -68,7 +71,7 @@ fn exe_api_loop(
         };
 
         // extend_supporting_data
-        let converted_data = convert_supporting_data(supporting_data)?;
+        let converted_data = convert_supporting_data(supporting_data, offset)?;
         tmp_data.extend(converted_data);
     }
     Ok(tmp_data)
