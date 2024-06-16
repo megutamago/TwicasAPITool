@@ -11,19 +11,25 @@ export async function diplayTable(displayMsgEl: HTMLElement | null, props: Suppo
       <table id="supportingListTable">
         <thead>
           <tr>
+            <th>番号</th>
             <th>ユーザーID</th>
             <th>ユーザー名</th>
-            <th id="sortButton2">point <span id="sortIcon2" class="sort-icon">&nbsp;&nbsp;&nbsp;</span></th>
-            <th id="sortButton3">total_point <span id="sortIcon3" class="sort-icon">&nbsp;&nbsp;&nbsp;</span></th>
+            <th id="sortButton3">point <span id="sortIcon3" class="sort-icon">&nbsp;&nbsp;&nbsp;</span></th>
+            <th id="sortButton4">total_point <span id="sortIcon4" class="sort-icon">&nbsp;&nbsp;&nbsp;</span></th>
+            <th>サポーター数</th>
+            <th>サポート数</th>
           </tr>
         </thead>
         <tbody>
           ${supportingData.map((item) => `
             <tr>
+              <td>${item._id}</td>
               <td>${item.screen_id}</td>
               <td>${item.name}</td>
               <td>${item.point}</td>
               <td>${item.total_point}</td>
+              <td>${item.supporter_count}</td>
+              <td>${item.supporting_count}</td>
             </tr>
           `).join('')}
         </tbody>
@@ -36,12 +42,12 @@ export async function diplayTable(displayMsgEl: HTMLElement | null, props: Suppo
   updateSortIcons(sortOrder);
 
   // 昇順、降順ボタンのクリックイベントを設定
-  const sortButton2 = document.getElementById('sortButton2');
   const sortButton3 = document.getElementById('sortButton3');
+  const sortButton4 = document.getElementById('sortButton4');
 
-  if (sortButton2 && sortButton3) {
-    sortButton2.addEventListener('click', () => sortHandler(2));
+  if (sortButton3 && sortButton4) {
     sortButton3.addEventListener('click', () => sortHandler(3));
+    sortButton4.addEventListener('click', () => sortHandler(4));
   }
 }
 
