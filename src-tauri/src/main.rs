@@ -4,6 +4,7 @@
 mod modules;
 use modules::supporting_list::{parse_json, ExtendSupportingData, SupportingData, SupportingList};
 use serde_json::Value as JsonValue;
+use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
 
@@ -52,13 +53,14 @@ fn exe_api_loop(
     user_id: &str,
     _token: Option<String>,
     _total: &String,
+    _offset: i32,
 ) -> Result<Vec<ExtendSupportingData>, String> {
-    let num: i32 = _total.parse().expect("Faied to conversion");
-    let loop_count = num / 20 + 1;
+    let total: i32 = _total.parse().expect("Faied to conversion");
+    let loop_count = (total - _offset) / 20 + 1;
     let mut loop_supporting_data: Vec<ExtendSupportingData> = Vec::new();
 
     for i in 0..loop_count {
-        let offset: i32 = i * 20;
+        let offset: i32 = _offset + i * 20;
         let limit: i32 = 20;
         #[allow(unused_variables)]
         let (total, supporting_data) = match exe_api(&user_id, _token.clone(), offset, limit) {
@@ -79,8 +81,18 @@ fn exe_api_loop(
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
-fn ladder(input: String) -> Result<(String, Vec<ExtendSupportingData>), String> {
-    let user_id = input;
+fn ladder(input: HashMap<String, String>) -> Result<(String, Vec<ExtendSupportingData>), String> {
+    let _offset = match input.get("offset") {
+        Some(id) => id.clone(),
+        None => return Err("offset is not specified".to_string()),
+    };
+
+    let offset: i32 = _offset.parse().unwrap_or(1);
+
+    let user_id = match input.get("user_id") {
+        Some(id) => id.clone(),
+        None => return Err("user_id is not specified".to_string()),
+    };
 
     let token_result = read_file();
     let token = match token_result {
@@ -103,7 +115,7 @@ fn ladder(input: String) -> Result<(String, Vec<ExtendSupportingData>), String> 
     };
 
     // API iterations
-    let loop_supporting_data = match exe_api_loop(&user_id, token.clone(), &total) {
+    let loop_supporting_data = match exe_api_loop(&user_id, token.clone(), &total, offset - 1) {
         Ok(data) => data,
         Err(err) => return Err(format!("Error occurred while executing loop APIs: {}", err)),
     };

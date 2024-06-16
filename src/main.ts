@@ -3,12 +3,13 @@ import { diplayTable } from './components/SupportingList';
 import { setupOpenSettings } from './components/OpenSettings';
 import { SupportingList } from './types/SupportingList';
 
-let displayInputEl: HTMLInputElement | null;
+let displayInputEls: (HTMLInputElement | null)[] = [];
 let displayMsgEl: HTMLElement | null;
 
 window.addEventListener("DOMContentLoaded", () => {
   // SupportingList
-  displayInputEl = document.querySelector("#display-input");
+  displayInputEls[0] = document.querySelector("#display-input1");
+  displayInputEls[1] = document.querySelector("#display-input2");
   displayMsgEl = document.querySelector("#display-msg");
   document.querySelector("#display-form")?.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -20,10 +21,14 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 async function display() {
-  if (displayMsgEl && displayInputEl) {
+  if (displayMsgEl && displayInputEls[0] && displayInputEls[1]) {
     const contents: SupportingList = await invoke("ladder", {
-      input: displayInputEl.value,
+      input: {
+        user_id: displayInputEls[0].value,
+        offset: displayInputEls[1].value
+      }
     });
+
     if (contents[0] && contents[1].length > 1) {
       diplayTable(displayMsgEl, contents)
       displayMsgEl.style.color = "white";
