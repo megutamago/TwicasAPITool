@@ -55,7 +55,7 @@ fn exe_api_loop(
 ) -> Result<Vec<ExtendSupportingData>, String> {
     let num: i32 = _total.parse().expect("Faied to conversion");
     let loop_count = num / 20 + 1;
-    let mut tmp_data: Vec<ExtendSupportingData> = Vec::new();
+    let mut loop_supporting_data: Vec<ExtendSupportingData> = Vec::new();
 
     for i in 0..loop_count {
         let offset: i32 = i * 20;
@@ -72,9 +72,9 @@ fn exe_api_loop(
 
         // extend_supporting_data
         let converted_data = convert_supporting_data(supporting_data, offset)?;
-        tmp_data.extend(converted_data);
+        loop_supporting_data.extend(converted_data);
     }
-    Ok(tmp_data)
+    Ok(loop_supporting_data)
 }
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command

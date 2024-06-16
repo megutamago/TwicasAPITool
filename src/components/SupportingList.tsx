@@ -4,10 +4,12 @@ import { sortTable, updateSortIcons } from '../utils/sort';
 let sortOrder: ('asc' | 'desc')[] = [];
 
 export async function diplayTable(displayMsgEl: HTMLElement | null, props: SupportingList) {
+  const total = props[0];
   const supportingData = props[1];
 
   if (displayMsgEl) {
     displayMsgEl.innerHTML = `
+      <h3>件数：${total}</h3>
       <table id="supportingListTable">
         <thead>
           <tr>
