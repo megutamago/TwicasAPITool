@@ -91,7 +91,7 @@ button {
   outline: none;
 }
 
-#display-input {
+#display-input1 {
   margin-right: 5px;
 }
 
@@ -243,4 +243,31 @@ th,td {
   font-weight: bold;
   font-size: 12px;
   line-height: 1.2;
+}
+
+.notice {
+  border-color: #f5c6cb;
+  color: #e05be2;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: .25rem;
+}
+
+.row input {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.row button:hover {
+  background-color: #0056b3;
+}
+
+/* 2つ目の入力欄のスタイル */
+#display-input2 {
+  width: 120px; /* 幅を指定 */
+  margin-left: 5px;
+  margin-right: 5px;
 }
