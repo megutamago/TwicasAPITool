@@ -59,9 +59,13 @@ impl SupportingList {
         Self { user_id, token }
     }
 
-    pub fn get_supporting_list(&self) -> Result<String, Box<dyn std::error::Error>> {
-        let offset = 10;
-        let limit = 20;
+    pub fn get_supporting_list(
+        &self,
+        offset: i32,
+        limit: i32,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        let offset = offset;
+        let limit = limit;
         let url = format!(
             "https://apiv2.twitcasting.tv/users/{}/supporting?offset={}&limit={}",
             self.user_id, offset, limit

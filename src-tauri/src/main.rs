@@ -17,9 +17,11 @@ fn main() {
 fn exe_api(
     user_id: &str,
     _token: Option<String>,
+    offset: i32,
+    limit: i32,
 ) -> Result<(i32, Vec<SupportingData>), Box<dyn Error>> {
     let supporting_list = SupportingList::new(user_id.to_string(), _token.unwrap_or_default());
-    let resp = supporting_list.get_supporting_list()?;
+    let resp = supporting_list.get_supporting_list(offset, limit)?;
     let json = parse_json(&resp)?;
 
     let (total, supporting_data) = SupportingList::get_supporting(&json).unwrap_or((0, vec![]));
@@ -53,8 +55,10 @@ fn exe_api_loop(
     let mut tmp_data: Vec<ExtendSupportingData> = Vec::new();
 
     for _ in 0..loop_count {
+        let offset: i32 = 0;
+        let limit: i32 = 20;
         #[allow(unused_variables)]
-        let (total, supporting_data) = match exe_api(&user_id, _token.clone()) {
+        let (total, supporting_data) = match exe_api(&user_id, _token.clone(), offset, limit) {
             Ok((total, supporting_data)) => {
                 let supporting_data_json = serde_json::to_value(supporting_data)
                     .map_err(|e| format!("Failed to convert supporting data to JSON: {}", e))?;
@@ -86,7 +90,7 @@ fn ladder(input: String) -> Result<(String, Vec<ExtendSupportingData>), String> 
 
     // Execute APIs
     #[allow(unused_variables)]
-    let (total, supporting_data) = match exe_api(&user_id, token.clone()) {
+    let (total, supporting_data) = match exe_api(&user_id, token.clone(), 0, 1) {
         Ok((total, supporting_data)) => {
             let supporting_data_json = serde_json::to_value(supporting_data)
                 .map_err(|e| format!("Failed to convert supporting data to JSON: {}", e))?;
