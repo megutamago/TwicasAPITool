@@ -24,7 +24,7 @@
 .container {
   margin: 0;
   padding-top: 10vh;
-  display: flex;
+  /* display: flex; */
   flex-direction: column;
   justify-content: center;
   text-align: center;
@@ -89,10 +89,6 @@ button:active {
 input,
 button {
   outline: none;
-}
-
-#display-input1 {
-  margin-right: 5px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -245,14 +241,19 @@ th,td {
   line-height: 1.2;
 }
 
+
+
+
+
 .notice {
-  border-color: #f5c6cb;
-  color: #e05be2;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border: 1px solid transparent;
-  border-radius: .25rem;
+  display: inline-block; /* インラインブロック表示に設定 */
+  border: 1px solid #f5c6cb; /* 線の色と幅を指定 */
+  color: #e05be2; /* 文字の色を指定 */
+  padding: 0.2rem 0.4rem; /* 上下左右の余白を設定 */
+  border-radius: 0.25rem; /* 角丸を設定 */
+  white-space: nowrap; /* テキストが改行されないように設定 */
 }
+
 
 .row input {
   padding: 10px;
@@ -265,8 +266,16 @@ th,td {
   background-color: #0056b3;
 }
 
+/* 1つ目の入力欄のスタイル */
+#display-input1 {
+  height: 25px;
+  width: 150px; /* 幅を指定 */
+  margin-right: 5px;
+}
+
 /* 2つ目の入力欄のスタイル */
 #display-input2 {
+  height: 25px;
   width: 120px; /* 幅を指定 */
   margin-left: 5px;
   margin-right: 5px;
