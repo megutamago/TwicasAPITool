@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod modules;
-use modules::supporting_list::{parse_json, SupportingData, SupportingList};
+use modules::supporting_list::{parse_json, ExtendSupportingData, SupportingData, SupportingList};
 use serde_json::Value as JsonValue;
 use std::error::Error;
 use std::fs;
@@ -14,7 +14,7 @@ fn main() {
         .expect("error while running tauri application");
 }
 
-fn exe_apis(
+fn exe_api(
     user_id: &str,
     _token: Option<String>,
 ) -> Result<(i32, Vec<SupportingData>), Box<dyn Error>> {
@@ -27,9 +27,52 @@ fn exe_apis(
     Ok((total, supporting_data))
 }
 
+fn convert_supporting_data(
+    supporting_data: JsonValue,
+) -> Result<Vec<ExtendSupportingData>, String> {
+    let result: Result<Vec<SupportingData>, _> = serde_json::from_value(supporting_data.clone());
+    let _supporting_data = match result {
+        Ok(data) => data,
+        Err(err) => return Err(err.to_string()),
+    };
+    let extend_supporting_data: Vec<ExtendSupportingData> = _supporting_data
+        .into_iter()
+        .enumerate()
+        .map(|(index, supporting_data)| ExtendSupportingData::new(index as i32, supporting_data))
+        .collect();
+    Ok(extend_supporting_data)
+}
+
+fn exe_api_loop(
+    user_id: &str,
+    _token: Option<String>,
+    _total: &String,
+) -> Result<Vec<ExtendSupportingData>, String> {
+    let num: i32 = _total.parse().expect("Faied to conversion");
+    let loop_count = num / 20 + 1;
+    let mut tmp_data: Vec<ExtendSupportingData> = Vec::new();
+
+    for _ in 0..loop_count {
+        #[allow(unused_variables)]
+        let (total, supporting_data) = match exe_api(&user_id, _token.clone()) {
+            Ok((total, supporting_data)) => {
+                let supporting_data_json = serde_json::to_value(supporting_data)
+                    .map_err(|e| format!("Failed to convert supporting data to JSON: {}", e))?;
+                (total.to_string(), supporting_data_json)
+            }
+            Err(_) => return Err("Error occurred while executing APIs".to_string()),
+        };
+
+        // extend_supporting_data
+        let converted_data = convert_supporting_data(supporting_data)?;
+        tmp_data.extend(converted_data);
+    }
+    Ok(tmp_data)
+}
+
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
-fn ladder(input: String) -> Result<(String, JsonValue), String> {
+fn ladder(input: String) -> Result<(String, Vec<ExtendSupportingData>), String> {
     let user_id = input;
 
     let token_result = read_file();
@@ -42,7 +85,8 @@ fn ladder(input: String) -> Result<(String, JsonValue), String> {
     };
 
     // Execute APIs
-    let (total, supporting_data) = match exe_apis(&user_id, token) {
+    #[allow(unused_variables)]
+    let (total, supporting_data) = match exe_api(&user_id, token.clone()) {
         Ok((total, supporting_data)) => {
             let supporting_data_json = serde_json::to_value(supporting_data)
                 .map_err(|e| format!("Failed to convert supporting data to JSON: {}", e))?;
@@ -51,7 +95,13 @@ fn ladder(input: String) -> Result<(String, JsonValue), String> {
         Err(_) => return Err("Error occurred while executing APIs".to_string()),
     };
 
-    Ok((total, supporting_data))
+    // API iterations
+    let loop_supporting_data = match exe_api_loop(&user_id, token.clone(), &total) {
+        Ok(data) => data,
+        Err(err) => return Err(format!("Error occurred while executing loop APIs: {}", err)),
+    };
+
+    Ok((total, loop_supporting_data))
 }
 
 #[tauri::command]

@@ -5,10 +5,43 @@ use std::error::Error;
 
 #[derive(Serialize, Debug, Deserialize)]
 pub struct SupportingData {
+    pub id: String,
     pub screen_id: String,
     pub name: String,
+    pub image: String,
+    pub profile: String,
+    pub level: i32,
+    pub last_movie_id: Option<String>,
+    pub is_live: bool,
+    pub supported: i32,
+    pub supporter_count: i32,
+    pub supporting_count: i32,
     pub point: i32,
     pub total_point: i32,
+    pub created: i32,
+}
+
+#[derive(Serialize)]
+pub struct ExtendSupportingData {
+    pub _id: i32,
+    #[serde(flatten)]
+    pub supporting_data: SupportingData,
+}
+
+impl ExtendSupportingData {
+    pub fn new(_id: i32, supporting_data: SupportingData) -> Self {
+        Self {
+            _id,
+            supporting_data,
+        }
+    }
+}
+
+#[derive(Serialize)]
+pub struct ExtendSupportingListData {
+    pub total: i32,
+    #[serde(flatten)]
+    pub extend_supporting_data: ExtendSupportingData,
 }
 
 pub struct SupportingList {
