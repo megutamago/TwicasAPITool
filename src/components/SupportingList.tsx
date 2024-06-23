@@ -9,15 +9,15 @@ export async function diplayTable(displayMsgEl: HTMLElement | null, props: Suppo
 
   if (displayMsgEl) {
     displayMsgEl.innerHTML = `
-      <h3>件数：${total}</h3>
+      <h3>サポートしている人の合計：${total}</h3>
       <table id="supportingListTable">
         <thead>
           <tr>
             <th>番号</th>
             <th>ユーザーID</th>
             <th>ユーザー名</th>
-            <th id="sortButton3">point <span id="sortIcon3" class="sort-icon">&nbsp;&nbsp;&nbsp;</span></th>
-            <th id="sortButton4">total_point <span id="sortIcon4" class="sort-icon">&nbsp;&nbsp;&nbsp;</span></th>
+            <th id="sortButton3">アイテム・スコア <span id="sortIcon3" class="sort-icon">&nbsp;&nbsp;&nbsp;</span></th>
+            <th id="sortButton4">累計スコア <span id="sortIcon4" class="sort-icon">&nbsp;&nbsp;&nbsp;</span></th>
             <th>サポートした日時</th>
           </tr>
         </thead>
