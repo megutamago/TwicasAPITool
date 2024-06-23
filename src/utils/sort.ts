@@ -3,7 +3,7 @@ export function sortTable(colIndex: number, sortOrder: ('asc' | 'desc')[]) {
     return;
   }
 
-  const table = document.getElementById("supportingListTable");
+  const table = document.getElementById("supportersListTable");
   if (!table) return;
 
   const tbody = table.querySelector('tbody');
@@ -34,7 +34,7 @@ export function sortTable(colIndex: number, sortOrder: ('asc' | 'desc')[]) {
 }
 
 export function updateSortIcons(sortOrder: ('asc' | 'desc')[]) {
-  const table = document.getElementById("supportingListTable");
+  const table = document.getElementById("supportersListTable");
   if (!table) return;
 
   const headers = table.querySelectorAll('th');

@@ -1,4 +1,4 @@
-export interface SupportingData {
+export interface SupportersData {
   _id: number,
   id: string,
   screen_id: string,
@@ -16,7 +16,7 @@ export interface SupportingData {
   created: number,
 }
 
-export interface SupportingList {
+export interface SupportersList {
   0: string;
-  1: SupportingData[];
+  1: SupportersData[];
 }

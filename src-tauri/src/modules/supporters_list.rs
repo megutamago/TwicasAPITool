@@ -4,7 +4,7 @@ use serde_json::Value;
 use std::error::Error;
 
 #[derive(Serialize, Debug, Deserialize)]
-pub struct SupportingData {
+pub struct SupportersData {
     pub id: String,
     pub screen_id: String,
     pub name: String,
@@ -22,29 +22,29 @@ pub struct SupportingData {
 }
 
 #[derive(Serialize)]
-pub struct ExtendSupportingData {
+pub struct ExtendSupportersData {
     pub _id: i32,
     #[serde(flatten)]
-    pub supporting_data: SupportingData,
+    pub supporters_data: SupportersData,
 }
 
-impl ExtendSupportingData {
-    pub fn new(_id: i32, supporting_data: SupportingData) -> Self {
+impl ExtendSupportersData {
+    pub fn new(_id: i32, supporters_data: SupportersData) -> Self {
         Self {
             _id,
-            supporting_data,
+            supporters_data,
         }
     }
 }
 
 #[derive(Serialize)]
-pub struct ExtendSupportingListData {
+pub struct ExtendSupportersListData {
     pub total: i32,
     #[serde(flatten)]
-    pub extend_supporting_data: ExtendSupportingData,
+    pub extend_supporters_data: ExtendSupportersData,
 }
 
-pub struct SupportingList {
+pub struct SupportersList {
     user_id: String,
     token: String,
 }
@@ -54,12 +54,12 @@ pub fn parse_json(text: &str) -> Result<Value, Box<dyn Error>> {
     Ok(json)
 }
 
-impl SupportingList {
+impl SupportersList {
     pub fn new(user_id: String, token: String) -> Self {
         Self { user_id, token }
     }
 
-    pub fn get_supporting_list(
+    pub fn get_supporters_list(
         &self,
         offset: i32,
         limit: i32,
@@ -67,7 +67,7 @@ impl SupportingList {
         let offset = offset;
         let limit = limit;
         let url = format!(
-            "https://apiv2.twitcasting.tv/users/{}/supporting?offset={}&limit={}",
+            "https://apiv2.twitcasting.tv/users/{}/supporters?offset={}&limit={}&sort=ranking",
             self.user_id, offset, limit
         );
 
@@ -79,21 +79,23 @@ impl SupportingList {
             .header("Authorization", &format!("Bearer {}", self.token))
             .send()?;
 
+        println!("{:?}", resp);
+
         let text = resp.text()?;
         Ok(text)
     }
 
-    pub fn get_supporting(json: &Value) -> Result<(i32, Vec<SupportingData>), Box<dyn Error>> {
+    pub fn get_supporters(json: &Value) -> Result<(i32, Vec<SupportersData>), Box<dyn Error>> {
         let total = json["total"].as_i64().unwrap_or(0) as i32;
-        let supporting: Vec<SupportingData> = {
-            if let Some(data) = json["supporting"].as_array() {
+        let supporters: Vec<SupportersData> = {
+            if let Some(data) = json["supporters"].as_array() {
                 data.iter()
-                    .filter_map(|item| serde_json::from_value::<SupportingData>(item.clone()).ok())
+                    .filter_map(|item| serde_json::from_value::<SupportersData>(item.clone()).ok())
                     .collect()
             } else {
                 Vec::new()
             }
         };
-        Ok((total, supporting))
+        Ok((total, supporters))
     }
 }

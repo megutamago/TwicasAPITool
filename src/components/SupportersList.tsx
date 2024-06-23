@@ -1,16 +1,16 @@
-import { SupportingList } from '../types/SupportingList';
+import { SupportersList } from '../types/SupportersList';
 import { sortTable, updateSortIcons } from '../utils/sort';
 
 let sortOrder: ('asc' | 'desc')[] = [];
 
-export async function diplayTable(displayMsgEl: HTMLElement | null, props: SupportingList) {
+export async function diplayTable(displayMsgEl: HTMLElement | null, props: SupportersList) {
   const total = props[0];
-  const supportingData = props[1];
+  const supportersData = props[1];
 
   if (displayMsgEl) {
     displayMsgEl.innerHTML = `
       <h3>サポートしている人の合計：${total}</h3>
-      <table id="supportingListTable">
+      <table id="supportersListTable">
         <thead>
           <tr>
             <th>番号</th>
@@ -22,7 +22,7 @@ export async function diplayTable(displayMsgEl: HTMLElement | null, props: Suppo
           </tr>
         </thead>
         <tbody>
-          ${supportingData.map((item) => `
+          ${supportersData.map((item) => `
             <tr>
               <td>${item._id}</td>
               <td>${item.screen_id}</td>

@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod modules;
-use modules::supporting_list::{parse_json, ExtendSupportingData, SupportingData, SupportingList};
+use modules::supporters_list::{parse_json, ExtendSupportersData, SupportersData, SupportersList};
 use serde_json::Value as JsonValue;
 use std::collections::HashMap;
 use std::error::Error;
@@ -20,33 +20,33 @@ fn exe_api(
     _token: Option<String>,
     offset: i32,
     limit: i32,
-) -> Result<(i32, Vec<SupportingData>), Box<dyn Error>> {
-    let supporting_list = SupportingList::new(user_id.to_string(), _token.unwrap_or_default());
-    let resp = supporting_list.get_supporting_list(offset, limit)?;
+) -> Result<(i32, Vec<SupportersData>), Box<dyn Error>> {
+    let supporters_list = SupportersList::new(user_id.to_string(), _token.unwrap_or_default());
+    let resp = supporters_list.get_supporters_list(offset, limit)?;
     let json = parse_json(&resp)?;
 
-    let (total, supporting_data) = SupportingList::get_supporting(&json).unwrap_or((0, vec![]));
+    let (total, supporters_data) = SupportersList::get_supporters(&json).unwrap_or((0, vec![]));
 
-    Ok((total, supporting_data))
+    Ok((total, supporters_data))
 }
 
-fn convert_supporting_data(
-    supporting_data: JsonValue,
+fn convert_supporters_data(
+    supporters_data: JsonValue,
     offset: i32,
-) -> Result<Vec<ExtendSupportingData>, String> {
-    let result: Result<Vec<SupportingData>, _> = serde_json::from_value(supporting_data.clone());
-    let _supporting_data = match result {
+) -> Result<Vec<ExtendSupportersData>, String> {
+    let result: Result<Vec<SupportersData>, _> = serde_json::from_value(supporters_data.clone());
+    let _supporters_data = match result {
         Ok(data) => data,
         Err(err) => return Err(err.to_string()),
     };
-    let extend_supporting_data: Vec<ExtendSupportingData> = _supporting_data
+    let extend_supporters_data: Vec<ExtendSupportersData> = _supporters_data
         .into_iter()
         .enumerate()
-        .map(|(index, supporting_data)| {
-            ExtendSupportingData::new(index as i32 + offset + 1, supporting_data)
+        .map(|(index, supporters_data)| {
+            ExtendSupportersData::new(index as i32 + offset + 1, supporters_data)
         })
         .collect();
-    Ok(extend_supporting_data)
+    Ok(extend_supporters_data)
 }
 
 fn exe_api_loop(
@@ -54,34 +54,34 @@ fn exe_api_loop(
     _token: Option<String>,
     _total: &String,
     _offset: i32,
-) -> Result<Vec<ExtendSupportingData>, String> {
+) -> Result<Vec<ExtendSupportersData>, String> {
     let total: i32 = _total.parse().expect("Faied to conversion");
     let loop_count = (total - _offset) / 20 + 1;
-    let mut loop_supporting_data: Vec<ExtendSupportingData> = Vec::new();
+    let mut loop_supporters_data: Vec<ExtendSupportersData> = Vec::new();
 
     for i in 0..loop_count {
         let offset: i32 = _offset + i * 20;
         let limit: i32 = 20;
         #[allow(unused_variables)]
-        let (total, supporting_data) = match exe_api(&user_id, _token.clone(), offset, limit) {
-            Ok((total, supporting_data)) => {
-                let supporting_data_json = serde_json::to_value(supporting_data)
-                    .map_err(|e| format!("Failed to convert supporting data to JSON: {}", e))?;
-                (total.to_string(), supporting_data_json)
+        let (total, supporters_data) = match exe_api(&user_id, _token.clone(), offset, limit) {
+            Ok((total, supporters_data)) => {
+                let supporters_data_json = serde_json::to_value(supporters_data)
+                    .map_err(|e| format!("Failed to convert supporters data to JSON: {}", e))?;
+                (total.to_string(), supporters_data_json)
             }
             Err(_) => return Err("Error occurred while executing APIs".to_string()),
         };
 
-        // extend_supporting_data
-        let converted_data = convert_supporting_data(supporting_data, offset)?;
-        loop_supporting_data.extend(converted_data);
+        // extend_supporters_data
+        let converted_data = convert_supporters_data(supporters_data, offset)?;
+        loop_supporters_data.extend(converted_data);
     }
-    Ok(loop_supporting_data)
+    Ok(loop_supporters_data)
 }
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
-fn ladder(input: HashMap<String, String>) -> Result<(String, Vec<ExtendSupportingData>), String> {
+fn ladder(input: HashMap<String, String>) -> Result<(String, Vec<ExtendSupportersData>), String> {
     let _offset = match input.get("offset") {
         Some(id) => id.clone(),
         None => return Err("offset is not specified".to_string()),
@@ -105,22 +105,22 @@ fn ladder(input: HashMap<String, String>) -> Result<(String, Vec<ExtendSupportin
 
     // Execute APIs
     #[allow(unused_variables)]
-    let (total, supporting_data) = match exe_api(&user_id, token.clone(), 0, 1) {
-        Ok((total, supporting_data)) => {
-            let supporting_data_json = serde_json::to_value(supporting_data)
-                .map_err(|e| format!("Failed to convert supporting data to JSON: {}", e))?;
-            (total.to_string(), supporting_data_json)
+    let (total, supporters_data) = match exe_api(&user_id, token.clone(), 0, 1) {
+        Ok((total, supporters_data)) => {
+            let supporters_data_json = serde_json::to_value(supporters_data)
+                .map_err(|e| format!("Failed to convert supporters data to JSON: {}", e))?;
+            (total.to_string(), supporters_data_json)
         }
         Err(_) => return Err("Error occurred while executing APIs".to_string()),
     };
 
     // API iterations
-    let loop_supporting_data = match exe_api_loop(&user_id, token.clone(), &total, offset - 1) {
+    let loop_supporters_data = match exe_api_loop(&user_id, token.clone(), &total, offset - 1) {
         Ok(data) => data,
         Err(err) => return Err(format!("Error occurred while executing loop APIs: {}", err)),
     };
 
-    Ok((total, loop_supporting_data))
+    Ok((total, loop_supporters_data))
 }
 
 #[tauri::command]

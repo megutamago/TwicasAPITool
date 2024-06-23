@@ -1,13 +1,13 @@
 import { invoke } from '@tauri-apps/api/tauri';
-import { diplayTable } from './components/SupportingList';
+import { diplayTable } from './components/SupportersList';
 import { setupOpenSettings } from './components/OpenSettings';
-import { SupportingList } from './types/SupportingList';
+import { SupportersList } from './types/SupportersList';
 
 let displayInputEls: (HTMLInputElement | null)[] = [];
 let displayMsgEl: HTMLElement | null;
 
 window.addEventListener("DOMContentLoaded", () => {
-  // SupportingList
+  // SupportersList
   displayInputEls[0] = document.querySelector("#display-input1");
   displayInputEls[1] = document.querySelector("#display-input2");
   displayMsgEl = document.querySelector("#display-msg");
@@ -22,7 +22,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 async function display() {
   if (displayMsgEl && displayInputEls[0] && displayInputEls[1]) {
-    const contents: SupportingList = await invoke("ladder", {
+    const contents: SupportersList = await invoke("ladder", {
       input: {
         user_id: displayInputEls[0].value,
         offset: displayInputEls[1].value
